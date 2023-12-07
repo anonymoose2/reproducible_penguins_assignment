@@ -4,18 +4,16 @@ output:
   html_document: default
   pdf_document: default
 date: "2023-10-09"
+editor_options: 
+  markdown: 
+    wrap: sentence
 ---
-
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-
-
 ## QUESTION 01: Data Visualisation for Science Communication
-
-
 
 ```{r, include= FALSE}
 install.packages("ggplot2")
@@ -37,17 +35,11 @@ library(svglite)
 write.csv(penguins_raw, "data/penguins_raw.csv")
 ```
 
-
-
 *Create a figure using the Palmer Penguin dataset that is correct but badly communicates the data. **Do not make a boxplot**.*
-
-
-   
-  
 
 ### a) Provide your figure here:
 
-```{r bad figure code, echo=FALSE, fig.width= 4, fig.height= 7}
+```{r bad figure code, echo=FALSE, fig.width= 4, fig.height= 7, warning=FALSE}
 
 # There is no need to provide the code for your bad figure, just use echo=FALSE so the code is hidden. Make sure your figure is visible after you knit it. 
 ggplot(penguins_raw, aes(x = `Culmen Length (mm)`, y = `Culmen Depth (mm)` )) +
@@ -60,16 +52,24 @@ ggplot(penguins_raw, aes(x = `Culmen Length (mm)`, y = `Culmen Depth (mm)` )) +
 
 ```
 
-
 ### b) Write about how your design choices mislead the reader about the underlying data (200-300 words).
 
-This figure misleads the reader because it misrepresents the underlying data. The figure above shows a scattergraph, plotting culmen length against culmen depth, for the palmer penguins data set.
-I have included a linear regression line using the geom_smooth(method = 'lm'), this gives the impression that there is a negative correlation between the two variables for the dataset,
-However, the palmer penguins dataset includes data for 3 separate species: Adelie, Gentoo and Chinstrap. When the data is subset by species and visualised this way, with a linear regression line for each species group, it can be seen that in fact there is a positive correlation between the variables, for each species. This could be considered an example of Simpsons Paradox (Wagner, 1982). The data shows a trend in one direction when the groups are combined, but reverses when each group is looked at individually.
-I have exaggerated this 'negative' correlation by adjusting the scale of the image and lengths of the x and y axis, to further mislead the reader.
+This figure misleads the reader because it misrepresents the underlying data.
+The figure above shows a scattergraph, plotting culmen length against culmen depth, for the palmer penguins data set.
+I have included a linear regression line using the geom_smooth(method = 'lm'), this gives the impression that there is a negative correlation between the two variables for the dataset, However, the palmer penguins dataset includes data for 3 separate species: Adelie, Gentoo and Chinstrap.
+When the data is subset by species and visualised this way, with a linear regression line for each species group, it can be seen that in fact there is a positive correlation between the variables, for each species.
+
+This could be considered an example of Simpsons Paradox (Wagner, 1982).
+The data shows a trend in one direction when the groups are combined, but reverses when each group is looked at individually.
+This is because the confounding effect of underlying heterogeneity, meaning that associations of variables in the subgroups is not apparent in the collective population.
+
+I have used this theory, and some visual elements to exaggerate this misleading 'negative' correlation.
+For example by adjusting the scale of the image and lengths of the x and y axis, to give the linear line of best fit a steeper slope.
+Additionally, the relatively large size of the data points acts to hide some of the separation in the data between groups.
+
 A more representative version of this figure could be the following:
 
-```{r, improved figure code, echo = FALSE}
+```{r, improved figure code, echo = FALSE, warning= FALSE}
 ggplot(penguins_raw, aes(x = `Culmen Length (mm)`, y = `Culmen Depth (mm)`, shape = Species, group = Species )) +
   geom_point() +
   geom_smooth(method = "lm", se = FALSE, color = "purple")+
@@ -78,13 +78,7 @@ ggplot(penguins_raw, aes(x = `Culmen Length (mm)`, y = `Culmen Depth (mm)`, shap
    theme_bw()
 ```
 
-
-
-
-
-
-*Include references.*
-*Wagner, C. H. (1982). Simpson’s Paradox in Real Life. The American Statistician, 36(1), 46–48. https://doi.org/10.2307/2684093*
+*Include references.* *Wagner, C. H. (1982). Simpson's Paradox in Real Life. The American Statistician, 36(1), 46--48. <https://doi.org/10.2307/2684093>*
 
 ------------------------------------------------------------------------
 
@@ -92,7 +86,17 @@ ggplot(penguins_raw, aes(x = `Culmen Length (mm)`, y = `Culmen Depth (mm)`, shap
 
 ### Introduction
 
-For this data analysis I will be using the palmer penguins data set. This has already been loaded as penguins_raw.csv
+For this data analysis I will be using the palmer penguins data set.
+This has already been loaded as penguins_raw.csv
+
+After briefly looking at culmen length and culmen depth as shown above, I am keen to see if there is a significant relationship between 2 different continuous variables.
+I want to see how body mass might act as a good predictor for flipper length.
+We might assume there to be a linear correlation between to two, with flipper length increasingly proportionally to body mass, with age or development.
+But we should also consider that body mass may not act as a good predictor of flipper length.
+For example, if flipper length serves a purpose in the ecological context beyond just being a indication of size of the individual.
+There are many reasons why a physiological trait may be exaggerated or disproportional to size in some individuals.
+Penguin flippers are an important feature for their swimming, playing a role in the hydrodynamics during underwater foraging.
+If certain induviduals show a tendency to undergo different kinds of swimming, then we could see varaition in the ratio of body mass to flipper size in some induviduals, but that is yet to be seen.
 
 Firstly, I am going to clean my data using the pipeline found below, and then write a new csv for my clean data.
 
@@ -110,14 +114,11 @@ write.csv(penguins_clean, "data/penguins_clean.csv")
 
 ```
 
-
 ### Hypothesis
 
-Specifically, within this data set, I want to investigate body mass and flipper length, across all 3 penguin species. I am interested in whether body mass (in grams) can act as a good predictor of flipper length (in mm). 
+*Hypothesis: There is a statistically significant linear relationship between body mass as a predictor variable, and flipper length as a response variable*
 
-*Hypothesis: There is a statistically significant relationship between body mass as a predictor variable, and flipper length as a response variable*
-
-*Null hypothesis: There is no statistically significant relationship between body mass as a predictor variable, and flipper length as the response variable*
+*Null hypothesis: There is no statistically significant linear relationship between body mass as a predictor variable, and flipper length as the response variable*
 
 Next, I am going to subset my current data, using the pipeline shown below, to only include the variables I am investigating, and remove any NA's.
 
@@ -132,13 +133,10 @@ write.csv(penguins_subset, "data/penguins_subset.csv")
 
 ```
 
-
-    
--   *Create an Exploratory Figure (**not a boxplot**)*
-
 ### Statistical Methods
 
-An exploratory plot acts to summarise the data being investigated and highlight any broad features. I created a function that produced a scatter plot of my predictor and response variables.
+An exploratory plot acts to summarise the data being investigated and highlight any broad features.
+I created a function that produced a scatter plot of my predictor and response variables.
 
 ```{r}
 #applying the function to create an exploratory plot
@@ -150,16 +148,17 @@ This figure appears to show a positive correlation between the two variables, ho
 
 I have created 2 functions for saving figures, one as a png file and one as an svg, for use depending on the context.
 
-```{r}
+```{r, include=TRUE, results='hide'}
 #saving figures as images using functions
 
 save_png_exploratory()
 save_svg_exploratory()
 ```
 
-In order to run a linear regresssion analysis in R, I have created a linear model for the data.
-The summary for the linear model, and the coefficients is also shown below.
-
+For my statistical analysis, I am going to run a simple linear regression.
+This will allow me test for the statistical signficance of the the association between the, and get a quantifiable idea of the strength of this association.
+I have created a linear model for the data.
+The summary for the linear model, and the coefficients are also shown below.
 
 ```{r}
 lm_model <- lm(body_mass_g ~ flipper_length_mm, data = penguins_subset)
@@ -171,44 +170,42 @@ summary(lm_model)
 
 ### Results
 
-The results of the linear regression analysis give a p value of 2.2e-16, this is a very low value being close to 0, this means that these results are statistically significant at the 0.001 confidence interval. This means that we can be reasonably certain that our predictor variable is a good predictor of our response variable, and that this relationship is unlikely to be due to chance.   
+The results of the linear regression analysis give a p value of 2.2e-16, this is a very low value being close to 0, this means that these results are statistically significant at the 0.001 confidence interval.
+This means that we can be reasonably certain that our predictor variable is a good predictor of our response variable, and that this relationship is unlikely to be due to chance.
+Additionally, the multiple R squared value here is 0.759, meaning that 75.9% of the variability in flipper length can be explained body mass, this suggests that the model is a good fit to the data.
+Therefore, we can reject our null hypothesis, that there is no statistically significant linear relationship between the two variables.
 
 I have included a figure with a linear regression line, which visually represents this relationship.
 
-```{r}
+```{r, warning= FALSE}
 penguins_plot_regression <- data_plot_regression(penguins_subset)
 penguins_plot_regression
 ```
 
 Below is the functions used to save this figure.
 
-```{r}
+```{r, include=TRUE, results='hide'}
 save_png_results()
 save_svg_results()
 ```
 
 ### Discussion
 
-Our results suggest a strong signifciant relationship between body mass and flipper length, where body mass can act as a successful predictor of flipper length, this is supported by the outputs of our linear regression model, including the p value.
+The results suggest a strong significant relationship between body mass and flipper length, where body mass can act as a successful predictor of flipper length, this is supported by the outputs of our linear regression model, including the p value and the adjusted r squared value.
 
-To improve on this analysis, further work could be done to see if the relationship between these variables varies with species or sex. As the current figure contains 3 separate species it does not account for the possibility of Simpsons Paradox, as shown previously.
+To improve on this analysis, further work could be done to see if the relationship between these variables varies with species or sex.
+As the current figure contains 3 separate species it does not account for the possibility of Simpsons Paradox, as shown previously.
+Additionally, there are limitations to this analysis, such as the fact that I assumed linearity in the relationship between the variables, and didn't account for any non-linear complexities.
 
-add adjusted r squared
-
-coefficients
-
-
-
-### Conclusion
-
-In Conclusion, we can be reasonably confident that body mass is a successful predictor of flipper length for the penguins included in the palmer penguins dataset. 
-
-This could provide insight.. etc
-
-
-
+Overall, these findings suggest that flipper length tends to grow with increasing body mass within the penguins included in this data set.
+This suggests that flipper length results from the size of the induvidual and not from other ecological factors.
 
 ### Conclusion
+
+In Conclusion, we can be reasonably confident that body mass is a successful predictor of flipper length for the penguins included in the palmer penguins dataset, which is in line with our hypothesis.
+
+These findings could provide insight into the anatomical development and growth of these penguin species.
+.
 
 ------------------------------------------------------------------------
 
@@ -218,29 +215,72 @@ This could provide insight.. etc
 
 *Upload your RProject you created for **Question 2** and any files and subfolders used to GitHub. Do not include any identifiers such as your name. Make sure your GitHub repo is public.*
 
-*GitHub link:* 
-https://github.com/anonymoose2/reproducible_penguins_assignment
+*GitHub link:* <https://github.com/anonymoose2/reproducible_penguins_assignment>
 
 *You will be marked on your repo organisation and readability.*
 
 ### b) Share your repo with a partner, download, and try to run their data pipeline.
 
-*Partner's GitHub link:*
+*Partner's GitHub link:* <https://github.com/AnonymousBiology/Penguins-Reproducible-Data-Homework>
 
 *You **must** provide this so I can verify there is no plagiarism between you and your partner.*
 
 ### c) Reflect on your experience running their code. (300-500 words)
 
+```         
+ I was able to successfully run my partners code
+```
+
 -   *What elements of your partner's code helped you to understand their data pipeline?*
+
+My partner made their pipeline very easy to understand for a number of reasons.
+Firstly, they effectively used explanations of what their code was doing, and why they were doing it, before the chunk of code.
+Secondly, all elements and functions were specifically labelled, so it was clear exactly what each one was used for.
+Additionally, there was no confusing overlap between the names, increasing ease of understanding.\
+My partner organised their files in a very coherent way, so that it was easy to navigate, for example if I wanted to view a function, I could find it within the sub folder 'functions' and from there navigate to the correct r script.
 
 -   *Did it run? Did you need to fix anything?*
 
+When I first tried to run the code, errors were coming up for the first chunk, in particular with regards to loading packages.
+However, upon updating my R to the newest version, these errors stopped occuring.
+But this was a problem from my end, and so the code would still be reproducible for someone running it on the most up to date version of R
+
 -   *What suggestions would you make for improving their code to make it more understandable or reproducible, and why?*
 
+There is very little I can say to critique my partners code, it was very well thought-out and executed.
+They could increase their awareness of package compatability, as some packages they installed were only compatabile with the most recent version of R, which shouldn't impact reproducibility, but could impact accessibilty, if it was being opened by someone without the correct updates.
+
+One another improvement that could be made would be to shorten function names, while they were very clear in what they labelling, at times it made the code slightly more messy and harder to follow.
+
 -   *If you needed to alter your partner's figure using their code, do you think that would be easy or difficult, and why?*
+
+It would be very easy to access the function that they used to plot their data, within their function file, in the r script 'plotting.r'.
+If I wanted to edit the code, I could copy the associated function, give it a new name, creating my own function, and edit it accordingly.
+I could then apply this new function to the data.
+This way, I am not writing over the old function.
 
 ### d) Reflect on your own code based on your experience with your partner's code and their review of yours. (300-500 words)
 
 -   *What improvements did they suggest, and do you agree?*
 
+They suggested that I section for functions script into separate scripts for cleaning, plotting, saving and testing.
+While I agree this would definitely be good practice when dealing with large numbers of functions in a big project.
+In the case of my analysis, there were not too many functions so navigating them was fairly easy in this.
+Additionally, they encountered an issue with my figure saving functions, meaning they were not reproducible.
+I was not aware of this issue, as this is not a problem I encountered when running the code.
+However, it is something I would improve upon in the future by using a different function.
+For example there is one linked to ggplot called ggsave, which could be more effective.
+
 -   *What did you learn about writing code for other people?*
+
+I learnt a lot from doing these lessons and completing this assignment.
+This is a style of code-writing that I was not familiar with before this.
+It has taught me to be very mindful of the reproducibility of my code.
+In particular, learning to ensure nothing is attached specifically to my browser or desktop and including steps such as installing and loading packages in the code.
+Also, I have learnt the value of using functions and pipelines, and saving these functions separately from the main code improves readability.
+
+I also learnt to navigate github repositories, including creating one, uploading and organising files, and sharing this with someone else.
+
+Doing this assignment also reinstated the importance of creating clear human and computer readable names for files and functions, as this can improve your own levels of organisation, but also help other people to navigate your code.
+
+The value of making code readable and reproducible cannot be understated, as this is important for achieving open science, and is a important skill to learn as a scientist working towards becoming published.
